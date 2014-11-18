@@ -1,6 +1,8 @@
 define(function(){
     'use strict';
 
+    var camTarget = new THREE.Vector3(0, 100, 0);
+
     function windowSize(){
         return {
             width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
@@ -8,27 +10,10 @@ define(function(){
         };
     }
 
-    function datControls(){
-        var gui = new dat.GUI();
-        var config = {
-            'rotation': true,
-            'rotationSpeed': 0.01,
-            'cameraDistance': 200
-        };
-
-        gui.add(config, 'rotation');
-        gui.add(config, 'rotationSpeed', -0.2, 0.2);
-        gui.add(config, 'cameraDistance', 0, 1000);
-
-        return config;
-    }
-
     function renderer(){
         var glRenderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
         
-        glRenderer.shadowMapEnabled = true;
-        glRenderer.shadowMapType = THREE.PCFSoftShadowMap;
-        glRenderer.setClearColor(0xffffff, 1);
+        glRenderer.setClearColor(0xeeeeee, 1);
 
         return glRenderer;
     }
@@ -38,51 +23,33 @@ define(function(){
         var cam = new THREE.PerspectiveCamera(40, wSize.width / wSize.height, 1, 20000);
         
         cam.position.set(0, 100, -1000);
-        cam.target = new THREE.Vector3(0, 0, 0);
-        cam.lookAt(cam.target);
+        cam.lookAt(camTarget);
 
         return cam;
     }
 
-    function spotlight(colour, x, y, z){
-        var light = new THREE.SpotLight(colour, 1);
-
-        light.position.set(x, y, z);
-        light.target.position.set(0, 0, 0);
-        light.castShadow = true;
-        light.shadowDarkness = 0.4;
-        light.shadowMapWidth = 1024;
-        light.shadowMapHeight = 1024;
-
-        return light;
-    }
-
     function lighting(){
         var group = new THREE.Group();
-        var ambient = new THREE.AmbientLight(0x222222, 1);
+        var ambient = new THREE.AmbientLight(0xaaaaaa, 1);
 
         group.add(ambient);
-        group.add(spotlight(0xE9C2A6, 100, 100, -100));
-        group.add(spotlight(0x555555, -100, 200, -100));
 
         return group;
     }
 
-    function rotateCamera(cam, controls, ticks){
-        var cameraDistance = controls.cameraDistance;
-        cam.position.x = Math.PI - Math.sin(ticks * controls.rotationSpeed) * cameraDistance;
-        cam.position.y = (Math.cos(ticks * controls.rotationSpeed) * cameraDistance) / 2;
-        cam.position.y += cameraDistance / 2;
-        cam.position.z = Math.PI - Math.cos(ticks * controls.rotationSpeed) * cameraDistance;
+    function rotateCamera(cam, ticks){
+        var cameraDistance = 450;
+        cam.position.x = Math.PI - Math.sin(ticks * 0.01) * cameraDistance;
+        cam.position.y = (Math.cos(ticks * 0.01) * cameraDistance) / 2;
+        cam.position.y += cameraDistance * 2/3;
+        cam.position.z = Math.PI - Math.cos(ticks * 0.01) * cameraDistance;
 
-        cam.target = new THREE.Vector3(0, 0, 0);
-        cam.lookAt(cam.target);
+        cam.lookAt(camTarget);
     }
 
     function Sandbox(){
         this.scene = new THREE.Scene();
         this.renderer = renderer();
-        this.controls = datControls();
         this.camera = camera();
         this.scene.add(lighting());
 
@@ -99,15 +66,11 @@ define(function(){
 
     Sandbox.prototype.animate = function(){
         var cam = this.camera;
-        var controls = this.controls;
         var numTicks = 0;
 
         function tick(){
             requestAnimationFrame(tick);
-            rotateCamera(cam, controls, numTicks);
-            if(controls.rotation){
-                numTicks++;
-            }
+            rotateCamera(cam, numTicks++);
         }
         tick();
     };
