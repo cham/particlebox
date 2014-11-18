@@ -7,7 +7,7 @@ define(function(){
             'accelX': 0.01,
             'accelY': 0.02,
             'accelZ': 0.04,
-            'randomness': 0,
+            'randomness': 0.00001,
             'emitParticles': true,
             'animate': true,
             'strobe': false,
