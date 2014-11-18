@@ -19,9 +19,9 @@ define(function(){
         f0.open();
 
         var f1 = gui.addFolder('Gravity');
-        f1.add(config, 'accelX', -0.1, 0.1, 0.001);
-        f1.add(config, 'accelY', -0.1, 0.1, 0.001);
-        f1.add(config, 'accelZ', -0.1, 0.1, 0.001);
+        f1.add(config, 'accelX', 0, 0.5, 0.001);
+        f1.add(config, 'accelY', 0, 0.5, 0.001);
+        f1.add(config, 'accelZ', 0, 0.5, 0.001);
         f1.open();
 
         var f2 = gui.addFolder('Stream Controls');
